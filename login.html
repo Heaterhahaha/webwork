@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+
+<body>
+    <div class="wrap">
+        <form>
+            <h2>Login</h2>
+            <div id="cjmz">
+                <label for="manname" class="lab">name</label>
+                <input type="text" class="form-control" id="manname" placeholder="please enter your password">
+                <span id="helpBlock4" class="help-block">名字不能为空</span>
+            </div>
+            <div class="form-group">
+                <label for="username" class="lab">用户名</label>
+                <input type="text" class="form-control" id="username" placeholder="please enter your name">
+                <span id="helpBlock1" class="help-block">用户名不能为空</span>
+            </div>
+            <div class="form-group">
+                <label for="pwd" class="lab">Password</label>
+                <input type="password" class="form-comanntrol" id="pwd" placeholder="please enter your password">
+                <span id="helpBlock2" class="help-block">密码不能为空</span>
+            </div>
+
+            <span id="helpBlock3" class="help-block">用户名或密码错误</span>
+            <div id="an">
+                <button type="button" class="btn btn-default" id="login">登录</button>
+                <button type="button" id="tj">提交</button>
+                <button type="button" id="zc">注册</button>
+                
+            </div>
+        </form>
+    </div>
+
+    <script type="text/javascript">
+        let cj = document.getElementById("cjmz");
+        let nameInput1 = document.getElementById("manname");
+        let nameInput = document.getElementById("username");
+        let pwdInput = document.getElementById("pwd");
+        let loginBtn = document.getElementById("login");
+        let zc = document.getElementById("zc");
+        let tj = document.getElementById("tj");
+        let hb1 = document.getElementById("helpBlock1");
+        let hb2 = document.getElementById("helpBlock2");
+        let hb3 = document.getElementById("helpBlock3");
+        const myHeaders = new Headers()
+        myHeaders.append("Content-Type", "application/json")
+        let host = 'https://db-api.amarea.cn'
+        let xmlHttp = new XMLHttpRequest();
+        let jsonObj = null;
+        xmlHttp.onload = function () {
+            if (xmlHttp.readyState == 4) { //表示响应完成
+                if (xmlHttp.status == 200) { //响应码为200  表示服务器正确响应
+                    //获取响应内容
+                    txt = xmlHttp.responseText;
+                    //把json字符串解析成json对象
+                    jsonObj = JSON.parse(txt);
+                    console.info(jsonObj)
+
+                } else {
+                    console.info('数据返回失败！状态代码：' + xmlHttp.status + '状态信息：' + xmlHttp.statusText);
+                }
+            }
+        }
+        xmlHttp.open('GET', 'https://db-api.amarea.cn/users', true);
+        xmlHttp.send();
+
+        loginBtn.onclick = function () {
+
+            //获取用户名和密码
+            let uname = nameInput.value;
+            let pwd = pwdInput.value;
+            //判断是否为空
+            if (!uname) {
+                console.log(jsonObj[0]['name'])
+                hb1.style.display = 'block';
+            } else if (!pwd) {
+                hb2.style.display = 'block';
+            } else { //登录成功
+                // for (let i = 0; i < jsonObj.length; i++) {
+                //     if (uname == jsonObj[i]['id'] && pwd == jsonObj[i]['password'])
+
+                //         window.location.href = 'success.html?id=' + uname + '&password=' + pwd;
+                //     else {
+                //         hb3.style.display = 'block';
+                //     }
+                // }
+
+                let requestOptions = { // 里面不能有body
+                    method: "GET",
+                    headers: myHeaders,
+                    redirect: "follow",
+                }
+                fetch(`${host}/${"users"}/${uname}`, requestOptions)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.password == pwd) {   // 验证是否存在该用户return data
+                            alert(data.name)
+                            window.open("success.html")
+                        } else {
+                            throw new Error("用户名不存在")
+                        }
+                    })
+                // .catch(err => console.log(err))
+
+            }
+
+
+        }
+        zc.onclick = function () {
+            cj.style.display = 'flex';
+            tj.style.display = 'block';
+            loginBtn.style.display='none';
+
+        }
+
+        tj.onclick = function () {
+
+            let key = 'users'
+
+            let requestOptions = {
+                method: "POST",
+                headers: myHeaders,
+                redirect: "follow",
+            }
+            let uname1 = nameInput1.value;
+            let uname = nameInput.value;
+            let pwd = pwdInput.value;
+            requestOptions.body = JSON.stringify({
+                id: uname1, name: uname, password: pwd,
+            });
+            fetch(`${host}/${key}`, requestOptions)
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.name + '用户注册成功')
+                })
+                .catch(err => {
+                    alert('用户已存在，注册失败')
+                    throw new Error("用户已存在，注册失败")
+                })
+
+        }
+
+    </script>
+</body>
+
+</html>

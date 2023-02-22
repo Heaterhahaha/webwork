@@ -1,0 +1,99 @@
+<!-- 
+	success.html 
+	登录成功后的页面，主要实现展示json中的所有数据，并完成模糊搜索的功能。页面较为简陋
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style type="text/css">
+		.search{
+			border-radius:10px 20px 0 0;
+		}
+		.btnSea{
+			display: inline-block;
+			margin-top: 0px;
+			margin-left: 200px;
+			width: 40%!important;
+		}
+		.result{
+			background-color: #FF99CC;
+			width: 400px;
+			height: 50px;
+			margin: 30px 200px;
+			left: 300px;
+		}
+		#list{
+			margin: 10px 200px;
+		}
+	</style>
+</head>
+<body>
+	<div class="search">
+		<frameset>
+			<input type="text" class="form-control btnSea" id="search">
+			<input class="btn btn-default" type="button" value="搜索" id="btn">
+		</frameset>
+	</div>
+	<ul id="list">
+			
+	</ul>
+	<div id="result" class="result"></div>
+	<script type="text/javascript">
+		
+		var xmlHttp = new XMLHttpRequest(); //创建一个ajax对象
+		var txt = null;
+		var ul = document.getElementById('list');
+		var btn = document.getElementById('btn');
+		
+		var result = document.getElementById('result');
+		var array = new Array();
+		xmlHttp.onreadystatechange = function(){
+			if(xmlHttp.readyState == 4){ //表示响应完成
+				if(xmlHttp.status == 200){ //响应码为200  表示服务器正确响应
+					//获取响应内容
+					txt = xmlHttp.responseText ;
+					//把json字符串解析成json对象
+					var jsonObj = JSON.parse(txt);
+ 
+					//动态拼接DOM结构
+					for(var i = 0;i<jsonObj.length;i++){
+ 
+						var li = document.createElement("li");
+						var txtNode = document.createTextNode( jsonObj[i]['name'] + '      ' + jsonObj[i]['id']);
+						array.push(jsonObj[i]['name']);
+ 
+						li.appendChild(txtNode);
+						ul.appendChild(li);
+ 
+					}
+ 
+				}else{
+					console.info('数据返回失败！状态代码：'+xhr.status+'状态信息：'+xhr.statusText);
+ 
+				}
+			}
+		}
+		xmlHttp.open('GET','https://db-api.amarea.cn/users',true);
+ 
+		xmlHttp.send()
+ 
+		btn.onclick = function(){
+ 
+			var search = document.getElementById('search').value;
+ 
+			for(i=0; i<array.length; i++){
+ 
+				if(array[i].indexOf(search) >= 0)
+				{
+					result.innerHTML = array[i];
+					console.info = '----'
+				}
+			}
+		}
+ 
+ 
+	</script>
+</body>
+</html>
