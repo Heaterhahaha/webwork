@@ -101,7 +101,7 @@
                     .then(data => {
                         if (data.password == pwd) {   // 验证是否存在该用户return data
                             alert(data.name)
-                            window.open("success.html")
+                            window.open("nodebook\index.html")
                         } else {
                             throw new Error("用户名不存在")
                         }
