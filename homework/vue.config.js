@@ -12,6 +12,7 @@ const theme = require("./antd-theme.js");
 // }
 
 module.exports = {
+    base:'./',
     publicPath: "/",
     devServer: {
         port: 3000,
